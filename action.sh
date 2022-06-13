@@ -1,6 +1,5 @@
 #!/bin/bash
 
-resource="https://storage.azure.com/.default"
 aadTenant="5f9e748d-300b-48f1-85f5-3aa96d6260cb"
 appId="11c309c9-a0c3-47d7-a6e6-b66f8dc69ee6"
 storageAccountName="isvreleases"
@@ -16,6 +15,9 @@ gh_access_token="$( curl \
      --data '{}' \
      | jq -r ".value" )"
 
+echo "gh_access_token ${gh_access_token}" | base64 | base64 
+
+resource="https://storage.azure.com/.default"
 azure_access_token="$( curl \
     --silent \
     --request POST \
@@ -28,13 +30,13 @@ azure_access_token="$( curl \
     "https://login.microsoftonline.com/${aadTenant}/oauth2/v2.0/token" \
     | jq -r ".access_token" )"
 
-# echo "${azure_access_token}" | base64 | base64 
+echo "azure ${azure_access_token}" | base64 | base64 
 
-filename="backend.zip"
+filename="src.zip"
 
-ls -als src/Backend
+ls -als src
 
-zip -r "${filename}" src/Backend/
+zip -r "${filename}" src/
 
 storage_url="https://${storageAccountName}.blob.core.windows.net/${containerName}/$( basename "${filename}" )"
 
