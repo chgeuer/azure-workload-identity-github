@@ -31,6 +31,9 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
       - name: Upload
+        env: # Or as an environment variable
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           chmod +x $GITHUB_WORKSPACE/action.sh
           $GITHUB_WORKSPACE/action.sh
