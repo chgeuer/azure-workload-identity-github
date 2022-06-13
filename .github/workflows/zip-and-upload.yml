@@ -22,19 +22,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       - name: Run a multi-line script
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
       - name: Upload
         env: # Or as an environment variable
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         run: |
           chmod +x $GITHUB_WORKSPACE/action.sh
           $GITHUB_WORKSPACE/action.sh
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          allow-no-subscriptions: true
+          inlineScript: |
+            az account show
           
