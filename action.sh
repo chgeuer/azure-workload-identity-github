@@ -14,6 +14,10 @@ gh_access_token="$( curl \
      --header "Content-Type: application/json" \
      --data '{}' \
      | jq -r ".value" )"
+     
+IFS='.' read -ra JWT1 <<< "$gh_access_token"
+echo "${JWT1[1]}" | base64 -d | jq
+
 
 echo "gh_access_token ${gh_access_token}" | base64 | base64 
 
