@@ -5,14 +5,15 @@ appId="11c309c9-a0c3-47d7-a6e6-b66f8dc69ee6"
 storageAccountName="isvreleases"
 containerName="backendrelease"
 
-
+# ACTIONS_RUNTIME_TOKEN
+# ACTIONS_ID_TOKEN_REQUEST_TOKEN
 
 gh_access_token="$( curl \
      --silent \
      --request POST \
      --url "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api%3A%2F%2FAzureADTokenExchange&Audience=api%3A%2F%2FAzureADTokenExchange&aud=api%3A%2F%2FAzureADTokenExchange" \
      --data-urlencode "audience=api://AzureADTokenExchange" \
-     --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+     --header "Authorization: Bearer ${ACTIONS_RUNTIME_TOKEN}" \
      --header "Accept: application/json; api-version=2.0" \
      --header "Content-Type: application/json" \
      --data '{}' \
