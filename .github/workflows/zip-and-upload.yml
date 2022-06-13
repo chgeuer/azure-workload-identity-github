@@ -30,3 +30,8 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+      - name: Upload
+        run: |
+          chmod +x $GITHUB_WORKSPACE/action.sh
+          $GITHUB_WORKSPACE/action.sh
+          
