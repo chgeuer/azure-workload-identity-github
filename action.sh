@@ -19,7 +19,7 @@ function jwt_claims {
     elif [ "${mod}" = 2 ]; then base64ClaimsWithPadding="${base64Claims}=="  ; 
     elif [ "${mod}" = 3 ]; then base64ClaimsWithPadding="${base64Claims}="   ; fi
 
-    echo "$( echo "${base64ClaimsWithPadding}" | base64 -d )"
+    echo "$( echo "${base64ClaimsWithPadding}" | base64 -d | jq '.' )"
 }
 
 
