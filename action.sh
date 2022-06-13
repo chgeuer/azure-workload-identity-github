@@ -1,7 +1,7 @@
 #!/bin/bash
 
-aadTenant="5f9e748d-300b-48f1-85f5-3aa96d6260cb"
-appId="11c309c9-a0c3-47d7-a6e6-b66f8dc69ee6"
+aadTenant="${AZURE_TENANT_ID}"
+appId="${AZURE_CLIENT_ID}"
 storageAccountName="isvreleases"
 containerName="backendrelease"
 
