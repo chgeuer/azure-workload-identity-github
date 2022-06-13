@@ -14,12 +14,12 @@ gh_access_token="$( curl \
      --header "Content-Type: application/json" \
      --data '{}' \
      | jq -r ".value" )"
-     
+
+echo "Github Credential"
 IFS='.' read -ra JWT1 <<< "$gh_access_token"
 echo "${JWT1[1]}" | base64 -d | jq
 
-
-echo "gh_access_token ${gh_access_token}" | base64 | base64 
+#######################################
 
 resource="https://storage.azure.com/.default"
 azure_access_token="$( curl \
@@ -34,7 +34,9 @@ azure_access_token="$( curl \
     "https://login.microsoftonline.com/${aadTenant}/oauth2/v2.0/token" \
     | jq -r ".access_token" )"
 
-echo "azure ${azure_access_token}" | base64 | base64 
+echo "Azure Credential"
+IFS='.' read -ra JWT2 <<< "$azure_access_token"
+echo "${JWT2[1]}" | base64 -d | jq
 
 filename="src.zip"
 
