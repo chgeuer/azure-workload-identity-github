@@ -5,6 +5,24 @@ appId="11c309c9-a0c3-47d7-a6e6-b66f8dc69ee6"
 storageAccountName="isvreleases"
 containerName="backendrelease"
 
+
+function jwt_claims {
+    local token="$1" ;
+    local base64Claims="$( echo "${token}" | awk '{ split($0,parts,"."); print parts[2] }' )" ;
+    local length="$( expr length "${base64Claims}" )" ;
+
+    local mod="$(( length % 4 ))" ;
+    
+    local base64ClaimsWithPadding
+    if   [ "${mod}" = 0 ]; then base64ClaimsWithPadding="${base64Claims}"    ; 
+    elif [ "${mod}" = 1 ]; then base64ClaimsWithPadding="${base64Claims}===" ; 
+    elif [ "${mod}" = 2 ]; then base64ClaimsWithPadding="${base64Claims}=="  ; 
+    elif [ "${mod}" = 3 ]; then base64ClaimsWithPadding="${base64Claims}="   ; fi
+
+    echo "$( echo "${base64ClaimsWithPadding}" | base64 -d )"
+}
+
+
 gh_access_token="$( curl \
      --silent \
      --request POST \
@@ -15,9 +33,12 @@ gh_access_token="$( curl \
      --data '{}' \
      | jq -r ".value" )"
 
+#IFS='.' read -ra JWT1 <<< "$gh_access_token"
+#echo "${JWT1[1]}" | base64 -d | jq
+
 echo "Github Credential"
-IFS='.' read -ra JWT1 <<< "$gh_access_token"
-echo "${JWT1[1]}" | base64 -d | jq
+echo "$( jwt_claims "${gh_access_token}" )"
+
 
 #######################################
 
@@ -35,8 +56,7 @@ azure_access_token="$( curl \
     | jq -r ".access_token" )"
 
 echo "Azure Credential"
-IFS='.' read -ra JWT2 <<< "$azure_access_token"
-echo "${JWT2[1]}" | base64 -d | jq
+echo "$( jwt_claims "${azure_access_token}" )"
 
 filename="src.zip"
 
