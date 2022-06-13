@@ -27,6 +27,7 @@ gh_access_token="$( curl \
      --silent \
      --request POST \
      --url "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api%3A%2F%2FAzureADTokenExchange" \
+     --data-urlencode "audience=api://AzureADTokenExchange" 
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      --header "Accept: application/json; api-version=2.0" \
      --header "Content-Type: application/json" \
