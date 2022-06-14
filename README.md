@@ -32,8 +32,8 @@ echo "Service Principal ID ${spId}"
 githubUser="chgeuer"
 githubRepo="azure-workload-identity-github"
 
-# audience="https://github.com/${githubUser}"
-audience="api://AzureADTokenExchange"
+audience="https://github.com/${githubUser}"
+# audience="api://AzureADTokenExchange"
 
 json="$( echo "{}" \
   | jq --arg x "federatedCred-${githubUser}-${githubRepo}"            '.name=$x'   \
