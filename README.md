@@ -15,9 +15,13 @@ az account show
 #### Create a new app
 
 ```shell
-appDisplayName="someApp"
-objectId="$( az ad app create --display-name "${appDisplayName}" | jq -r .id)"
-#objectId="$( az ad app list   --display-name "${appDisplayName}" | jq -r '.[0].id' )"
+appDisplayName="someApp2"
+appJson="$( az ad app create --display-name "${appDisplayName}" --enable-access-token-issuance)"
+id="$( echo "${appJson}" | jq -r .id )"
+az ad sp create --id "${id}"
+
+spId="$( az ad sp list --display-name "${appDisplayName}" | jq -r '.[0].appId' )"
+echo "Service Principal ID ${spId}"
 ```
 
 #### Set the federated credential
@@ -43,9 +47,9 @@ json="$( echo "{}" \
 echo "${json}" | jq .
 
 # https://docs.microsoft.com/en-us/graph/api/application-post-federatedidentitycredentials?view=graph-rest-beta&tabs=http#request
-az rest --method POST --uri "https://graph.microsoft.com/beta/applications/${objectId}/federatedIdentityCredentials/" --body "${json}"
+az rest --method POST --uri "https://graph.microsoft.com/beta/applications/${id}/federatedIdentityCredentials/" --body "${json}"
 
-az rest --method GET --uri "https://graph.microsoft.com/beta/applications/${objectId}/federatedIdentityCredentials/"
+az rest --method GET --uri "https://graph.microsoft.com/beta/applications/${id}/federatedIdentityCredentials/"
 ```
 
 #### Set the Github secrets
@@ -57,7 +61,6 @@ tenantId="$( az account show | jq -r '.tenantId' )"
 echo "Set ${githubUser}/${githubRepo} secret AZURE_TENANT_ID to ${tenantId}"
 gh secret set --repo "${githubUser}/${githubRepo}" AZURE_TENANT_ID --body "${tenantId}"
 
-appId="$( az ad app show --id "${objectId}" | jq -r '.appId' )"
-echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${objectId}"
-gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${objectId}"
+echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${spId}"
+gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${spId}"
 ```
