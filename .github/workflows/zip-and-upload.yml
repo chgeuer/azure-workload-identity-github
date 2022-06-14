@@ -20,6 +20,9 @@ jobs:
   build:
     name: Build the stuff
     runs-on: ubuntu-latest
+    env:
+      account_name: 'isvreleases'
+      container_name: 'backendrelease'
     steps:
       - uses: actions/checkout@v3
       - name: 'Interact with the Github IDP and Azure Workload Identity Federation from shell'
@@ -42,8 +45,6 @@ jobs:
         with:
           azcliversion: 2.37.0
           inlineScript: |
-            account_name="isvreleases"
-            container_name="backendrelease"
             filename="src.zip"
             blob_name="test-${GITHUB_SHA}.zip"
             blob_url="https://${account_name}.blob.core.windows.net/${container_name}/${blob_name}"
