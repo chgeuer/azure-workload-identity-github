@@ -1,4 +1,4 @@
-# Demo of Azure AD Workload Identity Federation with GitHub
+# Demo of [Azure AD Workload Identity Federation with GitHub](https://github.com/chgeuer/azure-workload-identity-github)
 
 > Upload a file from a GitHub action into a storage account without having a credential in GitHub.
 
@@ -6,8 +6,8 @@
 
 - Have a GitHub Action upload files into an Azure Blob Storage Account
   - Do it without having sensitive information in GitHub, by using [Azure Workload Identity Federation](https://docs.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust-github?tabs=azure-portal)
-  - Do it using proper GitHub Actions
-  - Do it using blain bash
+  - Show how to do it using proper GitHub Actions
+  - Show how to do it using blain bash and curl
 
 ## High-level steps
 
@@ -32,15 +32,18 @@ az account show
 appDisplayName="chgeuer-repo-demo"
 
 appJson="$( az ad app create \
-    --display-name "${appDisplayName}" )"
+  --display-name "${appDisplayName}" )"
 
-id="$( echo "${appJson}" | jq -r .id )"
+applicationObjectId="$( az ad app list \
+  --display-name "${appDisplayName}" | jq -r '.[0].id' )"
 
-az ad sp create --id "${id}"
+az ad sp create --id "${applicationObjectId}"
 
-spId="$( az ad sp list --display-name "${appDisplayName}" | jq -r '.[0].appId' )"
+spJson="$( az ad sp list --display-name "${appDisplayName}" | jq -r '.[0]' )"
+spClientId="$( echo "${spJson}" | jq -r '.appId' )"
+spObjectId="$( echo "${spJson}" | jq -r '.id' )"
 
-echo "Service Principal ID ${spId}"
+echo "Service Principal ClientID ${spClientId} object ID ${spObjectId}"
 ```
 
 #### Set the federated credential
@@ -68,15 +71,13 @@ echo "${json}" | jq .
 # https://docs.microsoft.com/en-us/graph/api/application-post-federatedidentitycredentials?view=graph-rest-beta&tabs=http#request
 az rest \
    --method POST \
-   --uri "https://graph.microsoft.com/beta/applications/${id}/federatedIdentityCredentials/" \
+   --uri "https://graph.microsoft.com/beta/applications/${applicationObjectId}/federatedIdentityCredentials/" \
    --body "${json}"
 
 az rest \
    --method GET \
-   --uri "https://graph.microsoft.com/beta/applications/${id}/federatedIdentityCredentials/"
+   --uri "https://graph.microsoft.com/beta/applications/${applicationObjectId}/federatedIdentityCredentials/"
 ```
-
-
 
 #### Set the Github secrets
 
@@ -91,3 +92,24 @@ echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${spId}"
 gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${spId}"
 ```
 
+#### Grant permissions on the storage account container
+
+```shell
+#!/bin/bash
+
+account_name="isvreleases"
+container_name="backendrelease"
+
+subscriptionId="$( az account show | jq -r '.id' )"
+resourceGroup="$( az storage account show --name "${storageAccountName}" | jq -r '.resourceGroup' )"
+scope="/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Storage/storageAccounts/${account_name}/blobServices/default/containers/${container_name}"
+role="Storage Blob Data Contributor" 
+
+echo "Authorizing ${spObjectId} to be a '${role}' on ${scope}"
+
+az role assignment create \
+    --role "${role}" \
+    --scope "${scope}" \
+    --assignee-principal-type "ServicePrincipal" \
+    --assignee-object-id "${spObjectId}"
+```
