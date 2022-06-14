@@ -52,6 +52,9 @@ az rest --method POST --uri "https://graph.microsoft.com/beta/applications/${id}
 az rest --method GET --uri "https://graph.microsoft.com/beta/applications/${id}/federatedIdentityCredentials/"
 ```
 
+https://docs.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust-github?tabs=azure-portal
+
+
 #### Set the Github secrets
 
 ```shell
