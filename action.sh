@@ -1,10 +1,29 @@
 #!/bin/bash
 
-gh_access_token="$( curl \
-     --silent \
+# aud="api%3A%2F%2FAzureADTokenExchange"
+# gh_idp="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${aud}&Audience=${aud}&aud=${aud}"
+
+curl \
+     --verbose \
+     --include \
      --request POST \
-     --url "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api%3A%2F%2FAzureADTokenExchange&Audience=api%3A%2F%2FAzureADTokenExchange&aud=api%3A%2F%2FAzureADTokenExchange" \
+     --url "${ACTIONS_ID_TOKEN_REQUEST_URL}" \
+     --data-urlencode "Audience=api://AzureADTokenExchange" \
      --data-urlencode "audience=api://AzureADTokenExchange" \
+     --data-urlencode "aud=api://AzureADTokenExchange" \
+     --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+     --header "Accept: application/json; api-version=2.0" \
+     --header "Content-Type: application/json" \
+     --data '{}'
+     
+gh_access_token="$( curl \
+     --verbose \
+     --include \
+     --request POST \
+     --url "${ACTIONS_ID_TOKEN_REQUEST_URL}" \
+     --data-urlencode "Audience=api://AzureADTokenExchange" \
+     --data-urlencode "audience=api://AzureADTokenExchange" \
+     --data-urlencode "aud=api://AzureADTokenExchange" \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      --header "Accept: application/json; api-version=2.0" \
      --header "Content-Type: application/json" \
