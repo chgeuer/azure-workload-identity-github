@@ -1,14 +1,21 @@
 #!/bin/bash
 
-aud="api%3A%2F%2FAzureADTokenExchange"
+encodedAudience="api%3A%2F%2FAzureADTokenExchange"
 
-gh_idp="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${aud}"
+# https://github.com/actions/toolkit/blob/main/packages/core/src/oidc-utils.ts#L70-L73
+#
+# if (audience) {
+#   const encodedAudience = encodeURIComponent(audience)
+#   id_token_url = `${id_token_url}&audience=${encodedAudience}`
+# }
+#
+id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
 
 curl \
      --verbose \
      --include \
      --request POST \
-     --url "${gh_idp}" \
+     --url "${id_token_url}" \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      --header "Accept: application/json; api-version=2.0" \
      --header "Content-Type: application/json" \
@@ -17,7 +24,7 @@ curl \
 gh_access_token="$( curl \
      --silent \
      --request POST \
-     --url "${gh_idp}" \
+     --url "${id_token_url}" \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      --header "Accept: application/json; api-version=2.0" \
      --header "Content-Type: application/json" \
