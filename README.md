@@ -107,18 +107,18 @@ The Azure credential is issued by my AAD tenant, has a subject (`"sub": "079fd90
 
 ## Open issue - GitHub IDP doesn't understand my audience parameter
 
-The audience handling of the GitHub IDB is tricky. When using the official `azure/login@v1` GitHub action, the action by default sets an audience of `"api://AzureADTokenExchange"`, which is exactly the same default value that Azure AD would expect for a Workload Identity Federation Scenario with GitHub.
+The audience handling of the GitHub IdP is tricky. When using the official `azure/login@v1` GitHub action, the action by default sets an audience of `"api://AzureADTokenExchange"`, which is exactly the same default value that Azure AD would expect for a Workload Identity Federation Scenario with GitHub.
 
 So this would work:
 
 ```yaml
-      - name: 'Login via azure/login@v1'
-        uses: azure/login@v1
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          allow-no-subscriptions: true
-          environment: azurecloud
+- name: 'Login via azure/login@v1'
+  uses: azure/login@v1
+  with:
+    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+    client-id: ${{ secrets.AZURE_CLIENT_ID }}
+    allow-no-subscriptions: true
+    environment: azurecloud
 ```
 
 Looking at the source code of the action ([toolkit/oidc-utils.ts](https://github.com/actions/toolkit/blob/main/packages/core/src/oidc-utils.ts#L70-L73)), we see this: 
@@ -147,12 +147,12 @@ id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
 Unfortunately, the issued JWT token from GitHub still has an  `"aud": "https://github.com/chgeuer"`. So I decided to [do the same in the GitHub Action](https://github.com/chgeuer/azure-workload-identity-github/blob/main/.github/workflows/zip-and-upload.yml#L38-L45), by requiring the same `audience`:
 
 ```yaml
-      - name: 'Login via azure/login@v1'
-        uses: azure/login@v1
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          allow-no-subscriptions: true
-          environment: azurecloud
-          audience: https://github.com/chgeuer
+- name: 'Login via azure/login@v1'
+  uses: azure/login@v1
+  with:
+    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+    client-id: ${{ secrets.AZURE_CLIENT_ID }}
+    allow-no-subscriptions: true
+    environment: azurecloud
+    audience: https://github.com/chgeuer
 ```
