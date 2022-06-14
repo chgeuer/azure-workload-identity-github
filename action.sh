@@ -14,6 +14,9 @@ gh_access_token="$( curl \
 echo "Github Credential"
 jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${gh_access_token}"
 
+
+echo "ACTIONS_ID_TOKEN_REQUEST_URL: $( echo "${ACTIONS_ID_TOKEN_REQUEST_URL}" | base64 --wrap=0  )"
+
 #######################################
 
 azure_access_token="$( curl \
