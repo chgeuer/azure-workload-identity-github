@@ -22,18 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-      - name: Upload
-        env: # Or as an environment variable
+      - name: 'Interact with the Github IDP and Azure Workload Identity Federation from shell'
+        env: 
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         run: |
           chmod +x $GITHUB_WORKSPACE/action.sh
           $GITHUB_WORKSPACE/action.sh
-      - name: 'Az CLI login'
+      - name: 'Login via azure/login@v1'
         uses: azure/login@v1
         with:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -41,7 +37,7 @@ jobs:
           allow-no-subscriptions: true
           environment: azurecloud
           audience: https://github.com/chgeuer
-      - name: 'CLI'
+      - name: 'Use the token to upload to storage'
         uses: azure/CLI@v1
         with:
           azcliversion: 2.37.0
