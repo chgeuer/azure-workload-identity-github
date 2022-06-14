@@ -29,7 +29,7 @@ az account show
 #### Create a new app
 
 ```shell
-appDisplayName="chgeuer-repo-demo"
+appDisplayName="chgeuer-repo-demo2"
 
 appJson="$( az ad app create \
   --display-name "${appDisplayName}" )"
