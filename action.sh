@@ -1,12 +1,5 @@
 #!/bin/bash
 
-aadTenant="${AZURE_TENANT_ID}"
-appId="${AZURE_CLIENT_ID}"
-storageAccountName="${account_name}"
-containerName="${container_name}"
-
-#######################################
-
 gh_access_token="$( curl \
      --silent \
      --request POST \
@@ -23,17 +16,16 @@ jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${gh_access_token}"
 
 #######################################
 
-resource="https://storage.azure.com/.default"
 azure_access_token="$( curl \
     --silent \
     --request POST \
     --data-urlencode "response_type=token" \
     --data-urlencode "grant_type=client_credentials" \
     --data-urlencode "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer" \
-    --data-urlencode "client_id=${appId}" \
+    --data-urlencode "client_id=${AZURE_CLIENT_ID}" \
     --data-urlencode "client_assertion=${gh_access_token}" \
-    --data-urlencode "scope=${resource}" \
-    "https://login.microsoftonline.com/${aadTenant}/oauth2/v2.0/token" \
+    --data-urlencode "scope=https://storage.azure.com/.default" \
+    "https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token" \
     | jq -r ".access_token" )"
 
 echo "Azure Credential"
@@ -41,7 +33,7 @@ jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${azure_access_token}"
 
 #######################################
 
-storage_url="https://${storageAccountName}.blob.core.windows.net/${containerName}/$( basename "${filename}" )"
+storage_url="https://${account_name}.blob.core.windows.net/${container_name}/$( basename "${filename}" )"
 
 curl \
     --request PUT \
@@ -54,6 +46,5 @@ curl \
     --upload-file "${filename}" \
     --url "${storage_url}"
 
-echo "Drop in ${storage_url}"
+echo "cURL uploaded the file to ${storage_url}"
 
-# cmd.exe /C "start $( echo "https://jwt.ms/#access_token=${azure_access_token}" )"
