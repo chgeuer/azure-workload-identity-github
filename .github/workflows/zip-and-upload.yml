@@ -45,8 +45,5 @@ jobs:
         uses: azure/CLI@v1
         with:
           azcliversion: 2.37.0
-      - name: 'Azure Commands'
-        run: |
-          az storage blob upload --account-name isvreleases --container-name backendrelease --file src.zip
-          
-          
+          inlineScript: |
+            az storage blob upload --account-name isvreleases --container-name backendrelease --file src.zip
