@@ -2,8 +2,10 @@
 
 aadTenant="${AZURE_TENANT_ID}"
 appId="${AZURE_CLIENT_ID}"
-storageAccountName="isvreleases"
-containerName="backendrelease"
+storageAccountName="${account_name}"
+containerName="${container_name}"
+
+#######################################
 
 gh_access_token="$( curl \
      --silent \
@@ -16,11 +18,8 @@ gh_access_token="$( curl \
      --data '{}' \
      | jq -r ".value" )"
 
-
-
 echo "Github Credential"
 jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${gh_access_token}"
-
 
 #######################################
 
@@ -40,13 +39,7 @@ azure_access_token="$( curl \
 echo "Azure Credential"
 jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${azure_access_token}"
 
-################
-
-filename="src.zip"
-
-ls -als src
-
-zip -r "${filename}" src/
+#######################################
 
 storage_url="https://${storageAccountName}.blob.core.windows.net/${containerName}/$( basename "${filename}" )"
 
