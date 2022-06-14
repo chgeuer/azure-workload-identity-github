@@ -46,4 +46,4 @@ jobs:
         with:
           azcliversion: 2.37.0
           inlineScript: |
-            az storage blob upload --account-name isvreleases --container-name backendrelease --file src.zip
+            az storage blob upload --auth-mode login --account-name isvreleases --container-name backendrelease --file src.zip
