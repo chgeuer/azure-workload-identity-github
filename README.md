@@ -156,3 +156,5 @@ Unfortunately, the issued JWT token from GitHub still has an  `"aud": "https://g
     environment: azurecloud
     audience: https://github.com/chgeuer
 ```
+
+> Simply speaking, I want both the GitHub Action login with the `azure/login@v1` plugin, as well as my custom bash script, to use an audience of `"api://AzureADTokenExchange"`. With the GitHub action, this is easy, I just need to delete the `audience` flag in the YAML. However, I can't convince my bash scripto to convince the GitHub IdP go set that audience. 
