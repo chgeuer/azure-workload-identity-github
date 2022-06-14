@@ -69,9 +69,9 @@ https://docs.microsoft.com/en-us/azure/active-directory/develop/workload-identit
 ```shell
 #!/bin/bash
 
-tenantId="$( az account show | jq -r '.tenantId' )"
-echo "Set ${githubUser}/${githubRepo} secret AZURE_TENANT_ID to ${tenantId}"
-gh secret set --repo "${githubUser}/${githubRepo}" AZURE_TENANT_ID --body "${tenantId}"
+AZURE_TENANT_ID="$( az account show | jq -r '.tenantId' )"
+echo "Set ${githubUser}/${githubRepo} secret AZURE_TENANT_ID to ${AZURE_TENANT_ID}"
+gh secret set --repo "${githubUser}/${githubRepo}" AZURE_TENANT_ID --body "${AZURE_TENANT_ID}"
 
 echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${spId}"
 gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${spId}"
