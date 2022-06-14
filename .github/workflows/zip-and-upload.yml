@@ -34,8 +34,7 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         run: |
-          chmod +x $GITHUB_WORKSPACE/action.sh
-          $GITHUB_WORKSPACE/action.sh
+          ./action.sh
       - name: 'Login via azure/login@v1'
         uses: azure/login@v1
         with:
