@@ -46,4 +46,10 @@ jobs:
         with:
           azcliversion: 2.37.0
           inlineScript: |
-            az storage blob upload --auth-mode login --account-name isvreleases --container-name backendrelease --overwrite --file src.zip --name "test-${GITHUB_SHA}.zip" 
+            account_name="isvreleases"
+            container_name="backendrelease"
+            filename="src.zip"
+            blob_name="test-${GITHUB_SHA}.zip"
+            blob_url="https://${account_name}.blob.core.windows.net/${container_name}/${blob_name}"
+            az storage blob upload --auth-mode login --account-name "${account_name}" --container-name "${container_name}" --overwrite --file "${filename}" --name "${blob_name}"
+            echo "Uploaded to ${blob_name}"
