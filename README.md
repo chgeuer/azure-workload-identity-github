@@ -88,8 +88,8 @@ AZURE_TENANT_ID="$( az account show | jq -r '.tenantId' )"
 echo "Set ${githubUser}/${githubRepo} secret AZURE_TENANT_ID to ${AZURE_TENANT_ID}"
 gh secret set --repo "${githubUser}/${githubRepo}" AZURE_TENANT_ID --body "${AZURE_TENANT_ID}"
 
-echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${spId}"
-gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${spId}"
+echo "Set ${githubUser}/${githubRepo} secret AZURE_CLIENT_ID to ${spClientId}"
+gh secret set --repo "${githubUser}/${githubRepo}" AZURE_CLIENT_ID --body "${spClientId}"
 ```
 
 #### Grant permissions on the storage account container
