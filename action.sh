@@ -1,7 +1,14 @@
 #!/bin/bash
 
-encodedAudience="api%3A%2F%2FAzureADTokenExchange"
-
+# For some reason, I cannot properly fetch a token for the "api://AzureADTokenExchange" audience.
+# I append the "&audience=api%3A%2F%2FAzureADTokenExchange" to the ACTIONS_ID_TOKEN_REQUEST_URL, 
+# but no help. Audience (`aud` property in token) remains "https://github.com/chgeuer"
+#
+# encodedAudience="api%3A%2F%2FAzureADTokenExchange"
+# id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
+#
+#
+# According to the docs and the source, it should work just as-is:
 # https://github.com/actions/toolkit/blob/main/packages/core/src/oidc-utils.ts#L70-L73
 #
 # if (audience) {
@@ -9,17 +16,17 @@ encodedAudience="api%3A%2F%2FAzureADTokenExchange"
 #   id_token_url = `${id_token_url}&audience=${encodedAudience}`
 # }
 #
-id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
+id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}"
 
-curl \
-     --verbose \
-     --include \
-     --request POST \
-     --url "${id_token_url}" \
-     --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-     --header "Accept: application/json; api-version=2.0" \
-     --header "Content-Type: application/json" \
-     --data '{}'
+# curl \
+#      --verbose \
+#      --include \
+#      --request POST \
+#      --url "${id_token_url}" \
+#      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+#      --header "Accept: application/json; api-version=2.0" \
+#      --header "Content-Type: application/json" \
+#      --data '{}'
 
 gh_access_token="$( curl \
      --silent \
@@ -33,7 +40,6 @@ gh_access_token="$( curl \
 
 echo "Github Credential"
 jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${gh_access_token}"
-
 
 echo "ACTIONS_ID_TOKEN_REQUEST_URL: $( echo "${ACTIONS_ID_TOKEN_REQUEST_URL}" | base64 --wrap=0  )"
 
