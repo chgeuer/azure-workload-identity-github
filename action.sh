@@ -5,6 +5,7 @@
 # but no help. Audience (`aud` property in token) remains "https://github.com/chgeuer"
 #
 encodedAudience="api%3A%2F%2FAzureADTokenExchange"
+encodedAudience="api://AzureADTokenExchange"
 id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
 #
 #
