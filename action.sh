@@ -32,12 +32,8 @@ id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
 echo "IDP: ${id_token_url}"
 gh_access_token="$( curl \
      --silent \
-     --request POST \
      --url "${id_token_url}" \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-     --header "Accept: application/json; api-version=2.0" \
-     --header "Content-Type: application/json" \
-     --data '{}' \
      | jq -r ".value" )"
 
 echo "Github Credential"
