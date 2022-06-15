@@ -3,6 +3,7 @@
 
 # If you want your audience handled properly, this call must be a GET.
 # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#updating-your-actions-for-oidc
+# https://docs.github.com/en/enterprise-server@3.5/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-cloud-providers#requesting-the-jwt-using-environment-variables
 
 encodedAudience="api%3A%2F%2FAzureADTokenExchange"
 gh_access_token="$( curl \
@@ -33,9 +34,9 @@ azure_access_token="$( curl \
 
 aad_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${azure_access_token}" )"
 
-echo "Azure Token Issuer:   iss=$( echo "${aad_claims}" | jq .iss )"
-echo "Azure Token Audience: aud=$( echo "${aad_claims}" | jq .aud )"
-echo "Azure Token Subject:  sub=$( echo "${aad_claims}" | jq .sub )"
+echo "Azure Token Issuer:    iss=$( echo "${aad_claims}" | jq .iss )"
+echo "Azure Token Audience:  aud=$( echo "${aad_claims}" | jq .aud )"
+echo "Azure Token Subject:   sub=$( echo "${aad_claims}" | jq .sub )"
 
 #######################################
 
