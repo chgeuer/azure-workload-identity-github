@@ -42,7 +42,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           allow-no-subscriptions: true
           environment: azurecloud
-          audience: https://github.com/chgeuer
       - name: 'Use the token to upload to storage'
         uses: azure/CLI@v1
         with:
