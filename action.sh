@@ -4,8 +4,8 @@
 # I append the "&audience=api%3A%2F%2FAzureADTokenExchange" to the ACTIONS_ID_TOKEN_REQUEST_URL, 
 # but no help. Audience (`aud` property in token) remains "https://github.com/chgeuer"
 #
-# encodedAudience="api%3A%2F%2FAzureADTokenExchange"
-# id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
+encodedAudience="api%3A%2F%2FAzureADTokenExchange"
+id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
 #
 #
 # According to the docs and the source, it should work just as-is:
@@ -16,7 +16,7 @@
 #   id_token_url = `${id_token_url}&audience=${encodedAudience}`
 # }
 #
-id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}"
+# id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}"
 
 # curl \
 #      --verbose \
@@ -28,6 +28,7 @@ id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}"
 #      --header "Content-Type: application/json" \
 #      --data '{}'
 
+echo "IDP: ${id_token_url}"
 gh_access_token="$( curl \
      --silent \
      --request POST \
