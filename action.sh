@@ -1,16 +1,21 @@
 #!/bin/bash
 
-encodedAudience="api%3A%2F%2FAzureADTokenExchange"
 
 # If you want your audience handled properly, this call must be a GET.
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#updating-your-actions-for-oidc
+
+encodedAudience="api%3A%2F%2FAzureADTokenExchange"
 gh_access_token="$( curl \
      --silent \
      --url "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}" \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      | jq -r ".value" )"
 
-echo "Github Credential"
-jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${gh_access_token}"
+gh_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${gh_access_token}" )"
+
+echo "GitHub Token Issuer:   iss=$( echo "${gh_claims}" | jq .iss )"
+echo "GitHub Token Audience: aud=$( echo "${gh_claims}" | jq .aud )"
+echo "GitHub Token Subject:  sub=$( echo "${gh_claims}" | jq .sub )"
 
 #######################################
 
@@ -26,8 +31,11 @@ azure_access_token="$( curl \
     "https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token" \
     | jq -r ".access_token" )"
 
-echo "Azure Credential"
-jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< "${azure_access_token}"
+aad_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${azure_access_token}" )"
+
+echo "Azure Token Issuer:   iss=$( echo "${aad_claims}" | jq .iss )"
+echo "Azure Token Audience: aud=$( echo "${aad_claims}" | jq .aud )"
+echo "Azure Token Subject:  sub=$( echo "${aad_claims}" | jq .sub )"
 
 #######################################
 
