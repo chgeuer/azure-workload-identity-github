@@ -11,8 +11,6 @@ githubRepo="azure-workload-identity-github"
 account_name="isvreleases"
 container_name="backendrelease"
 
-
-
 ## Setup
 ### Azure AD
 #### Ensure you're in the right AAD
@@ -37,14 +35,14 @@ echo "Service Principal ClientID ${spClientId} object ID ${spObjectId}"
 
 #### Set the federated credential
 
-audience="https://github.com/${githubUser}"
-# audience="api://AzureADTokenExchange"
+# audience="https://github.com/${githubUser}"
+audience="api://AzureADTokenExchange"
 
  json="$( echo "{}"                                                                   \
-   | jq --arg x "federatedCred-${githubUser}-${githubRepo}" '.name=$x'                \
-   | jq --arg x "Github repo ${githubUser}/${githubRepo}"   '.description=$x'         \
-   | jq --arg x "https://token.actions.githubusercontent.com"  '.issuer=$x'           \
-   | jq --arg x "repo:${githubUser}/${githubRepo}:ref:refs/heads/main"  '.subject=$x' \
+   | jq --arg x "federatedCred-${githubUser}-${githubRepo}"            '.name=$x'        \
+   | jq --arg x "Github repo ${githubUser}/${githubRepo}"              '.description=$x' \
+   | jq --arg x "https://token.actions.githubusercontent.com"          '.issuer=$x'      \
+   | jq --arg x "repo:${githubUser}/${githubRepo}:ref:refs/heads/main" '.subject=$x'   \
    | jq                                   '.audiences=[]'                             \
    | jq --arg x "${audience}"             '.audiences[.audiences | length] |= .+ $x'  \
 )"

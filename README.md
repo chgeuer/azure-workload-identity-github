@@ -36,7 +36,7 @@ The credential issued by the GitHub token issuer has the following properties wh
 
 - Issuer `"iss": "https://token.actions.githubusercontent.com"`
 - Subject: `"sub": "repo:chgeuer/azure-workload-identity-github:ref:refs/heads/main"`
-- Audience: `"aud": "https://github.com/chgeuer"`
+- Audience: `"aud": "api://AzureADTokenExchange"`
 
 ```text
 {
@@ -48,7 +48,7 @@ The credential issued by the GitHub token issuer has the following properties wh
 {
   "jti": "7bf1acbe-1f21-45cd-a7a9-e2448c1091ca",
   "sub": "repo:chgeuer/azure-workload-identity-github:ref:refs/heads/main",
-  "aud": "https://github.com/chgeuer",
+  "aud": "api://AzureADTokenExchange",
   "ref": "refs/heads/main",
   "sha": "7ad6b5b4691babd53c4a46a7dd731844423d5814",
   "repository": "chgeuer/azure-workload-identity-github",
@@ -105,56 +105,3 @@ The Azure credential is issued by my AAD tenant, has a subject (`"sub": "079fd90
 }
 ```
 
-## Open issue - GitHub IDP doesn't understand my audience parameter
-
-The audience handling of the GitHub IdP is tricky. When using the official `azure/login@v1` GitHub action, the action by default sets an audience of `"api://AzureADTokenExchange"`, which is exactly the same default value that Azure AD would expect for a Workload Identity Federation Scenario with GitHub.
-
-So this would work:
-
-```yaml
-- name: 'Login via azure/login@v1'
-  uses: azure/login@v1
-  with:
-    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    allow-no-subscriptions: true
-    environment: azurecloud
-```
-
-Looking at the source code of the action ([toolkit/oidc-utils.ts](https://github.com/actions/toolkit/blob/main/packages/core/src/oidc-utils.ts#L70-L73)), we see this: 
-
-```typescript
-static async getIDToken(audience?: string): Promise<string> {
-  ...
-  let id_token_url: string = OidcClient.getIDTokenUrl()
-  if (audience) {
-     const encodedAudience = encodeURIComponent(audience)
-     id_token_url = `${id_token_url}&audience=${encodedAudience}`
-  }
-  ...
-}
-```
-
-So the (working) `azure/login@v1` GitHub action just appends `&audience=api%3A%2F%2FAzureADTokenExchange` to the GitHub IDP URL (the `%3A%2F%2F` being the URL-encoded `://` from `"api://AzureADTokenExchange"`). 
-
-But when [my bash script does this](https://github.com/chgeuer/azure-workload-identity-github/blob/main/action.sh#L7-L8):
-
-```shell
-encodedAudience="api%3A%2F%2FAzureADTokenExchange"
-id_token_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${encodedAudience}"
-```
-
-Unfortunately, the issued JWT token from GitHub still has an  `"aud": "https://github.com/chgeuer"`. So I decided to [do the same in the GitHub Action](https://github.com/chgeuer/azure-workload-identity-github/blob/main/.github/workflows/zip-and-upload.yml#L38-L45), by requiring the same `audience`:
-
-```yaml
-- name: 'Login via azure/login@v1'
-  uses: azure/login@v1
-  with:
-    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    allow-no-subscriptions: true
-    environment: azurecloud
-    audience: https://github.com/chgeuer
-```
-
-> Simply speaking, I want both the GitHub Action login with the `azure/login@v1` plugin, as well as my custom bash script, to use an audience of `"api://AzureADTokenExchange"`. With the GitHub action, this is easy, I just need to delete the `audience` flag in the YAML. However, I can't convince my bash scripto to convince the GitHub IdP go set that audience. 
