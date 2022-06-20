@@ -9,7 +9,7 @@
   - Show how to do it using proper GitHub Actions
   - Show how to do it using blain bash and curl
 
-## High-level steps
+## High-level steps . 
 
 - Create an app in Azure Active Directory
   - Create a federated credential for that app
