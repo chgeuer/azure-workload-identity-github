@@ -18,9 +18,9 @@ echo "# Tokens" >> $GITHUB_STEP_SUMMARY
 echo "## Github Token" >> $GITHUB_STEP_SUMMARY
 echo "|          |    Value |"  >> $GITHUB_STEP_SUMMARY
 echo "| -------- | -------- |"  >> $GITHUB_STEP_SUMMARY
-echo "| Issuer   | iss=$( echo "${gh_claims}" | jq .iss ) |" >> $GITHUB_STEP_SUMMARY
-echo "| Audience | aud=$( echo "${gh_claims}" | jq .aud ) |" >> $GITHUB_STEP_SUMMARY
-echo "| Subject  | sub=$( echo "${gh_claims}" | jq .sub ) |" >> $GITHUB_STEP_SUMMARY
+echo "| Issuer   | `$( echo "${gh_claims}" | jq .iss )` |" >> $GITHUB_STEP_SUMMARY
+echo "| Audience | `$( echo "${gh_claims}" | jq .aud )` |" >> $GITHUB_STEP_SUMMARY
+echo "| Subject  | `$( echo "${gh_claims}" | jq .sub )` |" >> $GITHUB_STEP_SUMMARY
 
 echo "GitHub Token Issuer:   iss=$( echo "${gh_claims}" | jq .iss )"
 echo "GitHub Token Audience: aud=$( echo "${gh_claims}" | jq .aud )"
@@ -41,6 +41,13 @@ azure_access_token="$( curl \
     | jq -r ".access_token" )"
 
 aad_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${azure_access_token}" )"
+
+echo "## Azure Token" >> $GITHUB_STEP_SUMMARY
+echo "|          |    Value |"  >> $GITHUB_STEP_SUMMARY
+echo "| -------- | -------- |"  >> $GITHUB_STEP_SUMMARY
+echo "| Issuer   | `$( echo "${aad_claims}" | jq .iss )` |" >> $GITHUB_STEP_SUMMARY
+echo "| Audience | `$( echo "${aad_claims}" | jq .aud )` |" >> $GITHUB_STEP_SUMMARY
+echo "| Subject  | `$( echo "${aad_claims}" | jq .sub )` |" >> $GITHUB_STEP_SUMMARY
 
 echo "Azure Token Issuer:    iss=$( echo "${aad_claims}" | jq .iss )"
 echo "Azure Token Audience:  aud=$( echo "${aad_claims}" | jq .aud )"
