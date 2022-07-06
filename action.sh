@@ -12,22 +12,6 @@ gh_access_token="$( curl \
      --header "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
      | jq -r ".value" )"
 
-gh_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${gh_access_token}" )"
-
-echo "# Tokens" >> $GITHUB_STEP_SUMMARY
-echo "## Github Token" >> $GITHUB_STEP_SUMMARY
-echo "|          |    Value |"  >> $GITHUB_STEP_SUMMARY
-echo "| -------- | -------- |"  >> $GITHUB_STEP_SUMMARY
-echo "| Issuer   | \`$( echo "${gh_claims}" | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Audience | \`$( echo "${gh_claims}" | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Subject  | \`$( echo "${gh_claims}" | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
-
-echo "GitHub Token Issuer:   iss=$( echo "${gh_claims}" | jq .iss )"
-echo "GitHub Token Audience: aud=$( echo "${gh_claims}" | jq .aud )"
-echo "GitHub Token Subject:  sub=$( echo "${gh_claims}" | jq .sub )"
-
-#######################################
-
 azure_access_token="$( curl \
     --silent \
     --request POST \
@@ -40,18 +24,43 @@ azure_access_token="$( curl \
     "https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token" \
     | jq -r ".access_token" )"
 
+gh_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${gh_access_token}" )"
+
 aad_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${azure_access_token}" )"
 
-echo "## Azure Token" >> $GITHUB_STEP_SUMMARY
-echo "|          |    Value |"  >> $GITHUB_STEP_SUMMARY
-echo "| -------- | -------- |"  >> $GITHUB_STEP_SUMMARY
-echo "| Issuer   | \`$( echo "${aad_claims}" | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Audience | \`$( echo "${aad_claims}" | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Subject  | \`$( echo "${aad_claims}" | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
+echo "# Tokens"  >> $GITHUB_STEP_SUMMARY
+echo "## Github Token" >> $GITHUB_STEP_SUMMARY
+echo "| Token Issuer | Claim    |    Value                                    |" >> $GITHUB_STEP_SUMMARY
+echo "| ------------ | -------- | ------------------------------------------- |" >> $GITHUB_STEP_SUMMARY
+echo "| GitHub       | Issuer   | \`iss=$( echo "${gh_claims}"  | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
+echo "| GitHub       | Audience | \`aud=$( echo "${gh_claims}"  | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
+echo "| GitHub       | Subject  | \`sub=$( echo "${gh_claims}"  | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
+echo "| Azure        | Issuer   | \`iss=$( echo "${aad_claims}" | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
+echo "| Azure        | Audience | \`aud=$( echo "${aad_claims}" | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
+echo "| Azure        | Subject  | \`sub=$( echo "${aad_claims}" | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
 
-echo "Azure Token Issuer:    iss=$( echo "${aad_claims}" | jq .iss )"
-echo "Azure Token Audience:  aud=$( echo "${aad_claims}" | jq .aud )"
-echo "Azure Token Subject:   sub=$( echo "${aad_claims}" | jq .sub )"
+
+echo "# Tokens 2
+
+## Github Token
+
+| Token Issuer | Claim    |    Value                                    |
+| ------------ | -------- | ------------------------------------------- |
+| GitHub       | Issuer   | \`iss=$( echo "${gh_claims}"  | jq .iss )\` |
+| GitHub       | Audience | \`aud=$( echo "${gh_claims}"  | jq .aud )\` |
+| GitHub       | Subject  | \`sub=$( echo "${gh_claims}"  | jq .sub )\` |
+| Azure        | Issuer   | \`iss=$( echo "${aad_claims}" | jq .iss )\` |
+| Azure        | Audience | \`aud=$( echo "${aad_claims}" | jq .aud )\` |
+| Azure        | Subject  | \`sub=$( echo "${aad_claims}" | jq .sub )\` |
+" >> "${GITHUB_STEP_SUMMARY}"
+
+
+# echo "GitHub Token Issuer:   iss=$( echo "${gh_claims}" | jq .iss )"
+# echo "GitHub Token Audience: aud=$( echo "${gh_claims}" | jq .aud )"
+# echo "GitHub Token Subject:  sub=$( echo "${gh_claims}" | jq .sub )"
+# echo "Azure Token Issuer:    iss=$( echo "${aad_claims}" | jq .iss )"
+# echo "Azure Token Audience:  aud=$( echo "${aad_claims}" | jq .aud )"
+# echo "Azure Token Subject:   sub=$( echo "${aad_claims}" | jq .sub )"
 
 #######################################
 
