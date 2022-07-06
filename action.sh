@@ -25,24 +25,9 @@ azure_access_token="$( curl \
     | jq -r ".access_token" )"
 
 gh_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${gh_access_token}" )"
-
 aad_claims="$( jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "${azure_access_token}" )"
 
-echo "# Tokens"  >> $GITHUB_STEP_SUMMARY
-echo "## Github Token" >> $GITHUB_STEP_SUMMARY
-echo "| Token Issuer | Claim    |    Value                                    |" >> $GITHUB_STEP_SUMMARY
-echo "| ------------ | -------- | ------------------------------------------- |" >> $GITHUB_STEP_SUMMARY
-echo "| GitHub       | Issuer   | \`iss=$( echo "${gh_claims}"  | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| GitHub       | Audience | \`aud=$( echo "${gh_claims}"  | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| GitHub       | Subject  | \`sub=$( echo "${gh_claims}"  | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Azure        | Issuer   | \`iss=$( echo "${aad_claims}" | jq .iss )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Azure        | Audience | \`aud=$( echo "${aad_claims}" | jq .aud )\` |" >> $GITHUB_STEP_SUMMARY
-echo "| Azure        | Subject  | \`sub=$( echo "${aad_claims}" | jq .sub )\` |" >> $GITHUB_STEP_SUMMARY
-
-
-echo "# Tokens 2
-
-## Github Token
+echo "# Tokens
 
 | Token Issuer | Claim    |    Value                                    |
 | ------------ | -------- | ------------------------------------------- |
@@ -53,14 +38,6 @@ echo "# Tokens 2
 | Azure        | Audience | \`aud=$( echo "${aad_claims}" | jq .aud )\` |
 | Azure        | Subject  | \`sub=$( echo "${aad_claims}" | jq .sub )\` |
 " >> "${GITHUB_STEP_SUMMARY}"
-
-
-# echo "GitHub Token Issuer:   iss=$( echo "${gh_claims}" | jq .iss )"
-# echo "GitHub Token Audience: aud=$( echo "${gh_claims}" | jq .aud )"
-# echo "GitHub Token Subject:  sub=$( echo "${gh_claims}" | jq .sub )"
-# echo "Azure Token Issuer:    iss=$( echo "${aad_claims}" | jq .iss )"
-# echo "Azure Token Audience:  aud=$( echo "${aad_claims}" | jq .aud )"
-# echo "Azure Token Subject:   sub=$( echo "${aad_claims}" | jq .sub )"
 
 #######################################
 
