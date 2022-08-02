@@ -6,8 +6,8 @@
 
 - Have a GitHub Action upload files into an Azure Blob Storage Account
   - Do it without having sensitive information in GitHub, by using [Azure Workload Identity Federation](https://docs.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust-github?tabs=azure-portal)
-  - Show how to do it using proper GitHub Actions
-  - Show how to do it using blain bash and curl
+  - Show how to do it using proper GitHub Action `azure/login@v1`
+  - Show how you could do it using blain bash and curl, if that GH action would not exist. Bonus: It shows you the actual token contents in the Actions log.
 
 ## High-level steps . 
 
