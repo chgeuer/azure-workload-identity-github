@@ -9,6 +9,8 @@
   - Show how to do it using proper GitHub Action `azure/login@v1`
   - Show how you could do it using blain bash and curl, if that GH action would not exist. Bonus: It shows you the actual token contents in the Actions log.
 
+![image](https://user-images.githubusercontent.com/795162/182468899-bb5d2b25-0435-4d6b-9dac-496d46fb6e14.png)
+
 ## High-level steps . 
 
 - Create an app in Azure Active Directory
